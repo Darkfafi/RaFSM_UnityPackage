@@ -38,27 +38,28 @@ namespace RaFSM
 			OnPreSwitch();
 		}
 
-		internal void Enter()
+		internal virtual bool Enter()
 		{
 			if(IsCurrentState)
 			{
-				return;
+				return false;
 			}
 
 			IsCurrentState = true;
 			OnEnter();
+			return true;
 		}
 
-		internal void Exit(bool isSwitch)
+		internal virtual bool Exit(bool isSwitch)
 		{
 			if(!IsCurrentState)
 			{
-				return;
+				return false;
 			}
 
 			IsCurrentState = false;
 			OnExit(isSwitch);
-			return;
+			return true;
 		}
 
 		internal bool Deinit()
