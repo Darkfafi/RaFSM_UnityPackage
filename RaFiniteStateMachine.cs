@@ -29,7 +29,12 @@ namespace RaFSM
 
 			for(int i = 0; i < States.Length; i++)
 			{
-				States[i].Init(Parent);
+				var state = States[i];
+				if(state.IsInitialized)
+				{
+					throw new Exception($"[{nameof(RaFiniteStateMachine<TParent>)}]: State `{state}` already initialized. Did you add the same state to different Finite State Machines?");
+				}
+				state.Init(Parent);
 			}
 		}
 
@@ -44,7 +49,11 @@ namespace RaFSM
 
 		public void Dispose()
 		{
-			ExitCurrentState(false);
+			if(TryGetCurrentState(out var currentState))
+			{
+				CurrentStateIndex = NO_STATE_INDEX;
+				currentState.Exit(false);
+			}
 
 			for(int i = States.Length - 1; i >= 0; i--)
 			{
@@ -101,31 +110,46 @@ namespace RaFSM
 
 		private void EnterCurrentState(int index)
 		{
-			ExitCurrentState(true);
-			CurrentStateIndex = index;
+			// Prepare Exit
 			if(TryGetCurrentState(out var currentState))
 			{
-				currentState.Enter();
+				currentState.PreSwitch();
 			}
-		}
 
-		private void ExitCurrentState(bool isSwitch)
-		{
-			if(TryGetCurrentState(out var currentState))
+			// Prepare Enter
+			if(TryGetState(index, out var nextState))
 			{
-				CurrentStateIndex = NO_STATE_INDEX;
-				currentState.Exit(isSwitch);
+				nextState.PreSwitch();
+			}
+
+			// Exit
+			CurrentStateIndex = NO_STATE_INDEX;
+			if(currentState != null)
+			{
+				currentState.Exit(true);
+			}	
+
+			// Enter
+			CurrentStateIndex = index;
+			if(nextState != null)
+			{
+				nextState.Enter();
 			}
 		}
 
 		private bool TryGetCurrentState(out RaStateBase<TParent> currentState)
 		{
-			if(CurrentStateIndex >= 0 && CurrentStateIndex < States.Length)
+			return TryGetState(CurrentStateIndex, out currentState);
+		}
+
+		private bool TryGetState(int index, out RaStateBase<TParent> state)
+		{
+			if(index >= 0 && index < States.Length)
 			{
-				currentState = States[CurrentStateIndex];
+				state = States[index];
 				return true;
 			}
-			currentState = default;
+			state = default;
 			return false;
 		}
 	}
