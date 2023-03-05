@@ -47,7 +47,29 @@ namespace RaFSM
 			_fsm.SwitchState(null);
 		}
 
-		void IRaFSMState.GoToNextState()
+		public void SwitchState(RaGOStateBase state)
+		{
+			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
+			_fsm.SwitchState(state);
+			if(_callbackReceiver != null)
+			{
+				RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
+				_callbackReceiver.OnStateSwitched(newState, oldState);
+			}
+		}
+
+		public void SwitchState(int index)
+		{
+			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
+			_fsm.SwitchState(index);
+			if(_callbackReceiver != null)
+			{
+				RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
+				_callbackReceiver.OnStateSwitched(newState, oldState);
+			}
+		}
+
+		public void GoToNextState()
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.GoToNextState(_wrapFSM);

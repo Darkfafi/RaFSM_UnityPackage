@@ -33,28 +33,32 @@ namespace RaFSM
 			return true;
 		}
 
-		internal bool Enter()
+		internal void PreSwitch()
+		{
+			OnPreSwitch();
+		}
+
+		internal void Enter()
 		{
 			if(IsCurrentState)
 			{
-				return false;
+				return;
 			}
 
 			IsCurrentState = true;
 			OnEnter();
-			return true;
 		}
 
-		internal bool Exit(bool isSwitch)
+		internal void Exit(bool isSwitch)
 		{
 			if(!IsCurrentState)
 			{
-				return false;
+				return;
 			}
 
 			IsCurrentState = false;
 			OnExit(isSwitch);
-			return true;
+			return;
 		}
 
 		internal bool Deinit()
@@ -78,6 +82,14 @@ namespace RaFSM
 		protected virtual void OnPreInitialize()
 		{
 
+		}
+
+		/// <summary>
+		/// By checking <see cref="IsCurrentState"/>, you can determine whether to Prepare for an exit, or an enter 
+		/// </summary>
+		protected virtual void OnPreSwitch()
+		{
+		
 		}
 	}
 }
