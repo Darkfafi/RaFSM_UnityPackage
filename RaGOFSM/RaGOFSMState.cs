@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RaFSM
 {
 	public class RaGOFSMState : RaGOStateBase, IRaFSMState
 	{
+		[Header("RaGOFSMState")]
 		[SerializeField]
 		private RaGOStateBase[] _states = null;
 
@@ -12,6 +14,9 @@ namespace RaFSM
 
 		[SerializeField]
 		private bool _autoFillStates = true;
+
+		[SerializeField]
+		private GoFSMStateEvents _goFSMStateEvents;
 
 		private RaGOFiniteStateMachine _fsm = null;
 		private IFSMGOCallbackReceiver _callbackReceiver = null;
@@ -51,33 +56,21 @@ namespace RaFSM
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.SwitchState(state);
-			if(_callbackReceiver != null)
-			{
-				RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
-				_callbackReceiver.OnStateSwitched(newState, oldState);
-			}
+			FireNewStateEvent(oldState);
 		}
 
 		public void SwitchState(int index)
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.SwitchState(index);
-			if(_callbackReceiver != null)
-			{
-				RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
-				_callbackReceiver.OnStateSwitched(newState, oldState);
-			}
+			FireNewStateEvent(oldState);
 		}
 
 		public void GoToNextState()
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.GoToNextState(_wrapFSM);
-			if(_callbackReceiver != null)
-			{
-				RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
-				_callbackReceiver.OnStateSwitched(newState, oldState);
-			}
+			FireNewStateEvent(oldState);
 		}
 
 		protected void OnValidate()
@@ -88,9 +81,41 @@ namespace RaFSM
 			}
 		}
 
+		private void FireNewStateEvent(RaGOStateBase oldState)
+		{
+			RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
+			
+			if(_callbackReceiver != null)
+			{
+				_callbackReceiver.OnStateSwitched(newState, oldState);
+			}
+
+			_goFSMStateEvents.SwitchedStateEvent.Invoke(newState, oldState);
+			_goFSMStateEvents.SetStateEvent.Invoke(newState);
+		}
+
 		public interface IFSMGOCallbackReceiver
 		{
 			void OnStateSwitched(RaGOStateBase newState, RaGOStateBase oldState);
 		}
+	}
+
+	[System.Serializable]
+	public struct GoFSMStateEvents
+	{
+		public NewStateEvent SetStateEvent;
+		public SwitchStateEvent SwitchedStateEvent;
+	}
+
+	[System.Serializable]
+	public class SwitchStateEvent : UnityEvent<RaGOStateBase, RaGOStateBase>
+	{
+
+	}
+
+	[System.Serializable]
+	public class NewStateEvent : UnityEvent<RaGOStateBase>
+	{
+		
 	}
 }

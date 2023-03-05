@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RaFSM
 {
@@ -43,6 +44,10 @@ namespace RaFSM
 
 	public abstract class RaGOStateBase : RaStateBase<Component>
 	{
+		[Header("Core")]
+		[SerializeField]
+		private CoreEvents _coreEvents;
+
 		protected T GetDependency<T>(bool searchHierarchy = true)
 		{
 			if(Parent is T castedParent)
@@ -61,6 +66,39 @@ namespace RaFSM
 			}
 
 			throw new Exception($"[{nameof(RaGOStateBase.GetDependency)}]: Dependency of type '{typeof(T).Name}' not found on {Parent}!");
+		}
+
+		internal override bool Enter()
+		{
+			if(base.Enter())
+			{
+				_coreEvents.EnterStateEvent.Invoke(this);
+				return true;
+			}
+			return false;
+		}
+
+		internal override bool Exit(bool isSwitch)
+		{
+			if(base.Exit(isSwitch))
+			{
+				_coreEvents.ExitStateEvent.Invoke(this);
+				return true;
+			}
+			return false;
+		}
+
+		[System.Serializable]
+		public struct CoreEvents
+		{
+			public StateEvent EnterStateEvent;
+			public StateEvent ExitStateEvent;
+		}
+
+		[Serializable]
+		public class StateEvent : UnityEvent<RaGOStateBase>
+		{
+
 		}
 	}
 }
