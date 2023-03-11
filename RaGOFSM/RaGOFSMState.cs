@@ -17,7 +17,7 @@ namespace RaFSM
 		private bool _autoFillStates = true;
 
 		[FormerlySerializedAs("_goFSMStateEvents")]
-		private GoFSMStateEventCollection GoFSMStateEvents;
+		public GoFSMStateEventCollection GoFSMStateEvents;
 
 		private RaGOFiniteStateMachine _fsm = null;
 		private IFSMGOCallbackReceiver _callbackReceiver = null;
