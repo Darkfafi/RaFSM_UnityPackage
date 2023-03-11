@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace RaFSM
 {
@@ -45,10 +46,10 @@ namespace RaFSM
 	public abstract class RaGOStateBase : RaStateBase<Component>
 	{
 		[Header("Core")]
-		[SerializeField]
-		private CoreEvents _coreEvents;
+		[FormerlySerializedAs("_coreEvents")]
+		public CoreEventCollection CoreEvents;
 
-		protected T GetDependency<T>(bool searchHierarchy = true)
+		public T GetDependency<T>(bool searchHierarchy = true)
 		{
 			if(Parent is T castedParent)
 			{
@@ -72,7 +73,7 @@ namespace RaFSM
 		{
 			if(base.Enter())
 			{
-				_coreEvents.EnterStateEvent.Invoke(this);
+				CoreEvents.EnterStateEvent.Invoke(this);
 				return true;
 			}
 			return false;
@@ -82,14 +83,14 @@ namespace RaFSM
 		{
 			if(base.Exit(isSwitch))
 			{
-				_coreEvents.ExitStateEvent.Invoke(this);
+				CoreEvents.ExitStateEvent.Invoke(this);
 				return true;
 			}
 			return false;
 		}
 
-		[System.Serializable]
-		public struct CoreEvents
+		[Serializable]
+		public struct CoreEventCollection
 		{
 			public StateEvent EnterStateEvent;
 			public StateEvent ExitStateEvent;
