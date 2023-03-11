@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace RaFSM
 {
@@ -15,8 +16,8 @@ namespace RaFSM
 		[SerializeField]
 		private bool _autoFillStates = true;
 
-		[SerializeField]
-		private GoFSMStateEvents _goFSMStateEvents;
+		[FormerlySerializedAs("_goFSMStateEvents")]
+		private GoFSMStateEventCollection GoFSMStateEvents;
 
 		private RaGOFiniteStateMachine _fsm = null;
 		private IFSMGOCallbackReceiver _callbackReceiver = null;
@@ -90,8 +91,8 @@ namespace RaFSM
 				_callbackReceiver.OnStateSwitched(newState, oldState);
 			}
 
-			_goFSMStateEvents.SwitchedStateEvent.Invoke(newState, oldState);
-			_goFSMStateEvents.SetStateEvent.Invoke(newState);
+			GoFSMStateEvents.SwitchedStateEvent.Invoke(newState, oldState);
+			GoFSMStateEvents.SetStateEvent.Invoke(newState);
 		}
 
 		public interface IFSMGOCallbackReceiver
@@ -101,7 +102,7 @@ namespace RaFSM
 	}
 
 	[System.Serializable]
-	public struct GoFSMStateEvents
+	public struct GoFSMStateEventCollection
 	{
 		public NewStateEvent SetStateEvent;
 		public SwitchStateEvent SwitchedStateEvent;
