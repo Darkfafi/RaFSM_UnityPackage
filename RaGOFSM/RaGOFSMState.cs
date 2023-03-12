@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
+using static RaFSM.RaGOStateBase;
 
 namespace RaFSM
 {
@@ -72,6 +73,11 @@ namespace RaFSM
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.GoToNextState(_wrapFSM);
 			FireNewStateEvent(oldState);
+
+			if(oldState != null && _fsm.GetCurrentState() == null)
+			{
+				GoFSMStateEvents.LastStateExitEvent.Invoke();
+			}
 		}
 
 		protected void OnValidate()
@@ -104,19 +110,14 @@ namespace RaFSM
 	[System.Serializable]
 	public struct GoFSMStateEventCollection
 	{
-		public NewStateEvent SetStateEvent;
+		public StateEvent SetStateEvent;
 		public SwitchStateEvent SwitchedStateEvent;
+		public UnityEvent LastStateExitEvent;
 	}
 
 	[System.Serializable]
 	public class SwitchStateEvent : UnityEvent<RaGOStateBase, RaGOStateBase>
 	{
 
-	}
-
-	[System.Serializable]
-	public class NewStateEvent : UnityEvent<RaGOStateBase>
-	{
-		
 	}
 }
