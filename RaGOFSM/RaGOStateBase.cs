@@ -49,6 +49,11 @@ namespace RaFSM
 		[FormerlySerializedAs("_coreEvents")]
 		public CoreEventCollection CoreEvents;
 
+		public CoreEditorOptionCollection CoreEditorOptions = new CoreEditorOptionCollection()
+		{
+			CurrentStateSuffix = " [CURRENT]",
+		};
+
 		public T GetDependency<T>(bool searchHierarchy = true)
 		{
 			if(Parent is T castedParent)
@@ -69,10 +74,26 @@ namespace RaFSM
 			throw new Exception($"[{nameof(RaGOStateBase.GetDependency)}]: Dependency of type '{typeof(T).Name}' not found on {Parent}!");
 		}
 
+		public void FSM_GoToNextState()
+		{
+			GetDependency<IRaFSMState>().GoToNextState();
+		}
+
+		public void FSM_SwitchState(int index)
+		{
+			GetDependency<RaGOFSMState>().SwitchState(index);
+		}
+
+		public void FSM_SwitchState(RaGOStateBase state)
+		{
+			GetDependency<RaGOFSMState>().SwitchState(state);
+		}
+
 		internal override bool Enter()
 		{
 			if(base.Enter())
 			{
+				name += CoreEditorOptions.CurrentStateSuffix;
 				CoreEvents.EnterStateEvent.Invoke(this);
 				return true;
 			}
@@ -83,6 +104,7 @@ namespace RaFSM
 		{
 			if(base.Exit(isSwitch))
 			{
+				name = name.Replace(CoreEditorOptions.CurrentStateSuffix, string.Empty);
 				CoreEvents.ExitStateEvent.Invoke(this);
 				return true;
 			}
@@ -94,6 +116,13 @@ namespace RaFSM
 		{
 			public StateEvent EnterStateEvent;
 			public StateEvent ExitStateEvent;
+		}
+
+
+		[Serializable]
+		public struct CoreEditorOptionCollection
+		{
+			public string CurrentStateSuffix;
 		}
 
 		[Serializable]

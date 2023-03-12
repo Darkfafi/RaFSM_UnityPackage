@@ -38,7 +38,7 @@ namespace RaFSM
 
 		protected override void OnEnter()
 		{
-			_fsm.SwitchState(0);
+			SwitchState(0);
 		}
 
 		protected override void OnDeinit()
@@ -57,24 +57,24 @@ namespace RaFSM
 		public void SwitchState(RaGOStateBase state)
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
-			_fsm.SwitchState(state);
-			FireNewStateEvent(oldState);
+			int newStateIndex =_fsm.SwitchState(state);
+			FireNewStateEvent(newStateIndex, oldState);
 		}
 
 		public void SwitchState(int index)
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 			_fsm.SwitchState(index);
-			FireNewStateEvent(oldState);
+			FireNewStateEvent(index, oldState);
 		}
 
 		public void GoToNextState()
 		{
 			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
-			_fsm.GoToNextState(_wrapFSM);
-			FireNewStateEvent(oldState);
+			int nextIndex = _fsm.GoToNextState(_wrapFSM);
+			FireNewStateEvent(nextIndex, oldState);
 
-			if(oldState != null && _fsm.GetCurrentState() == null)
+			if(oldState != null && nextIndex == RaGOFiniteStateMachine.NO_STATE_INDEX)
 			{
 				GoFSMStateEvents.LastStateExitEvent.Invoke();
 			}
@@ -88,9 +88,13 @@ namespace RaFSM
 			}
 		}
 
-		private void FireNewStateEvent(RaGOStateBase oldState)
+		private void FireNewStateEvent(int newStateIndex, RaGOStateBase oldState)
 		{
-			RaGOStateBase newState = (RaGOStateBase)_fsm.GetCurrentState();
+			RaGOStateBase newState = null;
+			if(_fsm.TryGetState(newStateIndex, out var newStateRaw))
+			{
+				newState = (RaGOStateBase)newStateRaw;
+			}
 			
 			if(_callbackReceiver != null)
 			{
