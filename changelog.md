@@ -1,5 +1,13 @@
 # Changelog RaFSM
 
+## v1.3.0 - 12/03/2023
+* Added Exit last state event for GO FSM
+* Added queue to RaFiniteStateMachine, when a state tries to change to the next state during a switch, handling them one at a time
+* Added FSM_{X} Methods to allow a more generic state switch linking, automatically switching the states parent's FSM state
+* Added Suffix naming integration so you can optionally see the Current state of the FSM by the change of names
+* Made it so the Switch newState passed to events is the state which was initially requested to be switched to, instead of the current state
+* Made the TryGetState / TryGetCurrentState getters public for RaFiniteStateMachine
+
 ## v1.2.1 - 11/03/2023
 * Corrected FSM State Events accessibility
 
