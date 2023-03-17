@@ -5,8 +5,8 @@ namespace RaFSM
 {
 	public class RaGOFiniteStateMachine : RaFiniteStateMachine<Component>
 	{
-		public RaGOFiniteStateMachine(Component parent, RaGOStateBase[] states)
-			: base(parent, states)
+		public RaGOFiniteStateMachine(Component parent, RaGOStateBase[] states, bool excludeDisabledStates = true)
+			: base(parent, states, excludeDisabledStates)
 		{
 		}
 

@@ -28,21 +28,28 @@ namespace RaFSM
 		private int? _currentSwitch = null;
 		private Queue<int> _requestedSwitches = new Queue<int>();
 
-		public RaFiniteStateMachine(TParent parent, RaStateBase<TParent>[] states)
+		public RaFiniteStateMachine(TParent parent, RaStateBase<TParent>[] states, bool excludeDisabledStates = true)
 		{
 			CurrentStateIndex = NO_STATE_INDEX;
 
-			List<RaStateBase<TParent>> filteredStates = new List<RaStateBase<TParent>>(states.Length);
-			for(int i = 0; i <  states.Length; i++)
+			if(excludeDisabledStates)
 			{
-				RaStateBase<TParent> state = states[i];
-				if(state != null && state.enabled && state.gameObject.activeSelf)
+				List<RaStateBase<TParent>> filteredStates = new List<RaStateBase<TParent>>(states.Length);
+				for(int i = 0; i < states.Length; i++)
 				{
-					filteredStates.Add(state);
+					RaStateBase<TParent> state = states[i];
+					if(state != null && state.enabled && state.gameObject.activeSelf)
+					{
+						filteredStates.Add(state);
+					}
 				}
+				States = filteredStates.ToArray();
+			}
+			else
+			{
+				States = states;
 			}
 
-			States = filteredStates.ToArray();
 			Parent = parent;
 
 			for(int i = 0; i < States.Length; i++)
