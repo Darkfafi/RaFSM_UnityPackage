@@ -1,5 +1,12 @@
 # Changelog RaFSM
 
+## v1.3.1 - 17/03/2023
+* Added SwitchedStateEvent to the RaFiniteStateMachine
+* Added GetStateIndex method to the RaFiniteStateMachine
+* Made it so the GetDependency<T> can be overwritten for custom Dependency logics
+* Made Generic Variants for Dependency injection for the RaGoFSMState
+* Made it so the RaGOFSMState no longer allows for state changing if it is not the current state
+
 ## v1.3.0 - 12/03/2023
 * Added Exit last state event for GO FSM
 * Added queue to RaFiniteStateMachine, when a state tries to change to the next state during a switch, handling them one at a time
