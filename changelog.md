@@ -1,5 +1,10 @@
 # Changelog RaFSM
 
+## v1.3.2 - 17/03/2023
+* Added Security Checks within RaGOStateBase to check current state for FSM_{X} State Switching
+* Made it so an exception is thrown when Dependencies are retrieved while the state is not initialized
+* Made it the RaFiniteStateMachine excludes disabled states on initialization, for easy debugging (optional)
+
 ## v1.3.1 - 17/03/2023
 * Added SwitchedStateEvent to the RaFiniteStateMachine
 * Added GetStateIndex method to the RaFiniteStateMachine
