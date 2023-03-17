@@ -56,6 +56,11 @@ namespace RaFSM
 
 		public virtual T GetDependency<T>(bool searchHierarchy = true)
 		{
+			if(!IsInitialized)
+			{
+				throw new Exception($"Can't Get Dependency {typeof(T).Name} while State {name} is not Initialized");
+			}
+
 			if(Parent is T castedParent)
 			{
 				return castedParent;
@@ -76,17 +81,26 @@ namespace RaFSM
 
 		public void FSM_GoToNextState()
 		{
-			GetDependency<IRaFSMState>().GoToNextState();
+			if(IsCurrentState)
+			{
+				GetDependency<IRaFSMState>().GoToNextState();
+			}
 		}
 
 		public void FSM_SwitchState(int index)
 		{
-			GetDependency<RaGOFSMState>().SwitchState(index);
+			if(IsCurrentState)
+			{
+				GetDependency<RaGOFSMState>().SwitchState(index);
+			}
 		}
 
 		public void FSM_SwitchState(RaGOStateBase state)
 		{
-			GetDependency<RaGOFSMState>().SwitchState(state);
+			if(IsCurrentState)
+			{
+				GetDependency<RaGOFSMState>().SwitchState(state);
+			}
 		}
 
 		internal override bool Enter()

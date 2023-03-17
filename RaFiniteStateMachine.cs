@@ -31,7 +31,18 @@ namespace RaFSM
 		public RaFiniteStateMachine(TParent parent, RaStateBase<TParent>[] states)
 		{
 			CurrentStateIndex = NO_STATE_INDEX;
-			States = states;
+
+			List<RaStateBase<TParent>> filteredStates = new List<RaStateBase<TParent>>(states.Length);
+			for(int i = 0; i <  states.Length; i++)
+			{
+				RaStateBase<TParent> state = states[i];
+				if(state != null && state.enabled && state.gameObject.activeSelf)
+				{
+					filteredStates.Add(state);
+				}
+			}
+
+			States = filteredStates.ToArray();
 			Parent = parent;
 
 			for(int i = 0; i < States.Length; i++)
