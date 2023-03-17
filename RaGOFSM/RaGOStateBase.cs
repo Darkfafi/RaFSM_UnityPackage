@@ -54,7 +54,7 @@ namespace RaFSM
 			CurrentStateSuffix = " [CURRENT]",
 		};
 
-		public T GetDependency<T>(bool searchHierarchy = true)
+		public virtual T GetDependency<T>(bool searchHierarchy = true)
 		{
 			if(Parent is T castedParent)
 			{

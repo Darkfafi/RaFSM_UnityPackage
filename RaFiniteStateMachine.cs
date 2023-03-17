@@ -5,6 +5,9 @@ namespace RaFSM
 {
 	public class RaFiniteStateMachine<TParent> : IDisposable
 	{
+		public delegate void StateHandler(RaStateBase<TParent> newState, RaStateBase<TParent> previousState);
+		public event StateHandler SwitchedStateEvent;
+
 		public const int NO_STATE_INDEX = -1;
 
 		public RaStateBase<TParent>[] States
@@ -40,6 +43,18 @@ namespace RaFSM
 				}
 				state.Init(Parent);
 			}
+		}
+
+		public int GetStateIndex(RaStateBase<TParent> state)
+		{
+			for(int i = 0; i < States.Length; i++)
+			{
+				if(States[i] == state)
+				{
+					return i;
+				}
+			}
+			return -1;
 		}
 
 		public RaStateBase<TParent> GetCurrentState()
@@ -174,6 +189,8 @@ namespace RaFSM
 				{
 					nextState.Enter();
 				}
+
+				SwitchedStateEvent?.Invoke(nextState, currentState);
 			}
 			_currentSwitch = null;
 		}

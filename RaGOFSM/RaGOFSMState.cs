@@ -5,6 +5,44 @@ using static RaFSM.RaGOStateBase;
 
 namespace RaFSM
 {
+	public class RaGOFSMState<TDependencyA, TDependencyB> : RaGOFSMState
+	{
+		[SerializeField]
+		private bool _searchHierarchyForDependencies = true;
+
+		public TDependencyA DependencyA
+		{
+			get; private set;
+		}
+
+		public TDependencyB DependencyB
+		{
+			get; private set;
+		}
+
+		protected override void OnPreInitialize()
+		{
+			DependencyA = GetDependency<TDependencyA>(_searchHierarchyForDependencies);
+			DependencyB = GetDependency<TDependencyB>(_searchHierarchyForDependencies);
+		}
+	}
+
+	public class RaGOFSMState<TDependency> : RaGOFSMState
+	{
+		[SerializeField]
+		private bool _searchHierarchyForDependencies = true;
+
+		public TDependency Dependency
+		{
+			get; private set;
+		}
+
+		protected override void OnPreInitialize()
+		{
+			Dependency = GetDependency<TDependency>(_searchHierarchyForDependencies);
+		}
+	}
+
 	public class RaGOFSMState : RaGOStateBase, IRaFSMState
 	{
 		[Header("RaGOFSMState")]
@@ -56,27 +94,36 @@ namespace RaFSM
 
 		public void SwitchState(RaGOStateBase state)
 		{
-			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
-			int newStateIndex =_fsm.SwitchState(state);
-			FireNewStateEvent(newStateIndex, oldState);
+			if(IsCurrentState)
+			{
+				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
+				int newStateIndex = _fsm.SwitchState(state);
+				FireNewStateEvent(newStateIndex, oldState);
+			}
 		}
 
 		public void SwitchState(int index)
 		{
-			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
-			_fsm.SwitchState(index);
-			FireNewStateEvent(index, oldState);
+			if(IsCurrentState)
+			{
+				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
+				_fsm.SwitchState(index);
+				FireNewStateEvent(index, oldState);
+			}
 		}
 
 		public void GoToNextState()
 		{
-			RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
-			int nextIndex = _fsm.GoToNextState(_wrapFSM);
-			FireNewStateEvent(nextIndex, oldState);
-
-			if(oldState != null && nextIndex == RaGOFiniteStateMachine.NO_STATE_INDEX)
+			if(IsCurrentState)
 			{
-				GoFSMStateEvents.LastStateExitEvent.Invoke();
+				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
+				int nextIndex = _fsm.GoToNextState(_wrapFSM);
+				FireNewStateEvent(nextIndex, oldState);
+
+				if(oldState != null && nextIndex == RaGOFiniteStateMachine.NO_STATE_INDEX)
+				{
+					GoFSMStateEvents.LastStateExitEvent.Invoke();
+				}
 			}
 		}
 
