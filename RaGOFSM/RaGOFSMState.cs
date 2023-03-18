@@ -127,7 +127,7 @@ namespace RaFSM
 			}
 		}
 
-		protected void OnValidate()
+		protected virtual void OnValidate()
 		{
 			if(_autoFillStates)
 			{

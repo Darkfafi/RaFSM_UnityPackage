@@ -40,7 +40,7 @@ namespace RaFSM
 
 		internal virtual bool Enter()
 		{
-			if(IsCurrentState)
+			if(IsCurrentState || !this)
 			{
 				return false;
 			}
@@ -52,7 +52,7 @@ namespace RaFSM
 
 		internal virtual bool Exit(bool isSwitch)
 		{
-			if(!IsCurrentState)
+			if(!IsCurrentState || !this)
 			{
 				return false;
 			}
