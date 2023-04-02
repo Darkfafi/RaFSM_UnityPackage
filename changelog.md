@@ -1,5 +1,11 @@
 # Changelog RaFSM
 
+## v1.4.0 - 02/04/2023
+* Created RaGOFSMRoot to make it so there is a ready to use FSM component without requiring custom classes
+* Moved generic usable Interfaces/ Events to the file RaGOUtilClasses
+* Made it so IRaFSMState is renamed to IRaFSMCycler
+* Added IRaGOFSM to allow for generic SwitchState links to the RaGOStateBase
+
 ## v1.3.2 - 17/03/2023
 * Added Security Checks within RaGOStateBase to check current state for FSM_{X} State Switching
 * Made it so an exception is thrown when Dependencies are retrieved while the state is not initialized
