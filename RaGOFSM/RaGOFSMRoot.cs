@@ -1,50 +1,11 @@
-using RaFSM.Core;
+﻿using RaFSM.Core;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace RaFSM
 {
-	public class RaGOFSMState<TDependencyA, TDependencyB> : RaGOFSMState
+	public sealed class RaGOFSMRoot : MonoBehaviour, IRaGOFSM
 	{
-		[SerializeField]
-		private bool _searchHierarchyForDependencies = true;
-
-		public TDependencyA DependencyA
-		{
-			get; private set;
-		}
-
-		public TDependencyB DependencyB
-		{
-			get; private set;
-		}
-
-		protected override void OnPreInitialize()
-		{
-			DependencyA = GetDependency<TDependencyA>(_searchHierarchyForDependencies);
-			DependencyB = GetDependency<TDependencyB>(_searchHierarchyForDependencies);
-		}
-	}
-
-	public class RaGOFSMState<TDependency> : RaGOFSMState
-	{
-		[SerializeField]
-		private bool _searchHierarchyForDependencies = true;
-
-		public TDependency Dependency
-		{
-			get; private set;
-		}
-
-		protected override void OnPreInitialize()
-		{
-			Dependency = GetDependency<TDependency>(_searchHierarchyForDependencies);
-		}
-	}
-
-	public class RaGOFSMState : RaGOStateBase, IRaGOFSM
-	{
-		[Header("RaGOFSMState")]
+		[Header("RaGOFSMRoot")]
 		[SerializeField]
 		private RaGOStateBase[] _states = null;
 
@@ -57,46 +18,53 @@ namespace RaFSM
 		[SerializeField]
 		private bool _excludeDisabledStates = true;
 
-		[FormerlySerializedAs("_goFSMStateEvents")]
+		[SerializeField]
+		private RunType _runType = RunType.Start;
+
 		public RaGoFSMEventCollection GoFSMStateEvents;
 
 		private RaGOFiniteStateMachine _fsm = null;
-		private IRaGOFSMCallbackReceiver _callbackReceiver = null;
 
-		protected override void OnInit()
+		public bool IsRunning => _fsm != null && _fsm.CurrentStateIndex != RaGOFiniteStateMachine.NO_STATE_INDEX;
+
+		private void Awake()
 		{
 			_fsm = new RaGOFiniteStateMachine(this, _states, _excludeDisabledStates);
-			try
+
+			if(_runType == RunType.Awake)
 			{
-				_callbackReceiver = GetDependency<IRaGOFSMCallbackReceiver>();
-			}
-			catch
-			{
-				_callbackReceiver = default;
+				RunFSM();
 			}
 		}
 
-		protected override void OnEnter()
+		private void Start()
 		{
-			SwitchState(0);
+			if(_runType == RunType.Start)
+			{
+				RunFSM();
+			}
 		}
 
-		protected override void OnDeinit()
+		private void OnDestroy()
 		{
-			_callbackReceiver = null;
-			_fsm.Dispose();
-			_fsm = null;
-
+			if(_fsm != null)
+			{
+				_fsm.Dispose();
+				_fsm = null;
+			}
 		}
 
-		protected override void OnExit(bool isSwitch)
+		public void RunFSM(int index = 0)
 		{
-			_fsm.SwitchState(null);
+			if(!IsRunning)
+			{
+				_fsm.SwitchState(index);
+			}
 		}
 
 		public void SwitchState(RaGOStateBase state)
 		{
-			if(IsCurrentState)
+			if(IsRunning)
 			{
 				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 				int newStateIndex = _fsm.SwitchState(state);
@@ -106,7 +74,7 @@ namespace RaFSM
 
 		public void SwitchState(int index)
 		{
-			if(IsCurrentState)
+			if(IsRunning)
 			{
 				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 				_fsm.SwitchState(index);
@@ -116,7 +84,7 @@ namespace RaFSM
 
 		public void GoToNextState()
 		{
-			if(IsCurrentState)
+			if(IsRunning)
 			{
 				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 				int nextIndex = _fsm.GoToNextState(_wrapFSM);
@@ -129,7 +97,7 @@ namespace RaFSM
 			}
 		}
 
-		protected virtual void OnValidate()
+		private void OnValidate()
 		{
 			if(_autoFillStates)
 			{
@@ -144,14 +112,16 @@ namespace RaFSM
 			{
 				newState = (RaGOStateBase)newStateRaw;
 			}
-			
-			if(_callbackReceiver != null)
-			{
-				_callbackReceiver.OnStateSwitched(newState, oldState);
-			}
 
 			GoFSMStateEvents.SwitchedStateEvent.Invoke(newState, oldState);
 			GoFSMStateEvents.SetStateEvent.Invoke(newState);
+		}
+
+		public enum RunType
+		{
+			Manual = 0,
+			Awake = 1,
+			Start = 2
 		}
 	}
 }

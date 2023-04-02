@@ -1,6 +1,6 @@
+using RaFSM.Core;
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 namespace RaFSM
@@ -47,9 +47,9 @@ namespace RaFSM
 	{
 		[Header("Core")]
 		[FormerlySerializedAs("_coreEvents")]
-		public CoreEventCollection CoreEvents;
+		public RaGOCoreEventCollection CoreEvents;
 
-		public CoreEditorOptionCollection CoreEditorOptions = new CoreEditorOptionCollection()
+		public RaGOCoreEditorOptionCollection CoreEditorOptions = new RaGOCoreEditorOptionCollection()
 		{
 			CurrentStateSuffix = " [CURRENT]",
 		};
@@ -83,7 +83,7 @@ namespace RaFSM
 		{
 			if(IsCurrentState)
 			{
-				GetDependency<IRaFSMState>().GoToNextState();
+				GetDependency<IRaFSMCycler>().GoToNextState();
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace RaFSM
 		{
 			if(IsCurrentState)
 			{
-				GetDependency<RaGOFSMState>().SwitchState(index);
+				GetDependency<IRaGOFSM>().SwitchState(index);
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace RaFSM
 		{
 			if(IsCurrentState)
 			{
-				GetDependency<RaGOFSMState>().SwitchState(state);
+				GetDependency<IRaGOFSM>().SwitchState(state);
 			}
 		}
 
@@ -123,26 +123,6 @@ namespace RaFSM
 				return true;
 			}
 			return false;
-		}
-
-		[Serializable]
-		public struct CoreEventCollection
-		{
-			public StateEvent EnterStateEvent;
-			public StateEvent ExitStateEvent;
-		}
-
-
-		[Serializable]
-		public struct CoreEditorOptionCollection
-		{
-			public string CurrentStateSuffix;
-		}
-
-		[Serializable]
-		public class StateEvent : UnityEvent<RaGOStateBase>
-		{
-
 		}
 	}
 }
