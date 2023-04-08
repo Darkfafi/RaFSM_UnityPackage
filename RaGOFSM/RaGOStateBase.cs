@@ -103,6 +103,16 @@ namespace RaFSM
 			}
 		}
 
+		internal override bool Init(Component parent)
+		{
+			if(base.Init(parent))
+			{
+				CoreEvents.InitStateEvent.Invoke(this);
+				return true;
+			}
+			return false;
+		}
+
 		internal override bool Enter()
 		{
 			if(base.Enter())
@@ -120,6 +130,16 @@ namespace RaFSM
 			{
 				name = name.Replace(CoreEditorOptions.CurrentStateSuffix, string.Empty);
 				CoreEvents.ExitStateEvent.Invoke(this);
+				return true;
+			}
+			return false;
+		}
+
+		internal override bool Deinit()
+		{
+			if(base.Deinit())
+			{
+				CoreEvents.DeinitStateEvent.Invoke(this);
 				return true;
 			}
 			return false;

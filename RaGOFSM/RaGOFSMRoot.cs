@@ -29,8 +29,6 @@ namespace RaFSM
 
 		private void Awake()
 		{
-			_fsm = new RaGOFiniteStateMachine(this, _states, _excludeDisabledStates);
-
 			if(_runType == RunType.Awake)
 			{
 				RunFSM();
@@ -58,7 +56,16 @@ namespace RaFSM
 		{
 			if(!IsRunning)
 			{
+				if(_fsm == null)
+				{
+					_fsm = new RaGOFiniteStateMachine(this, _states, _excludeDisabledStates);
+				}
+
 				_fsm.SwitchState(index);
+			}
+			else
+			{
+				Debug.LogError($"Can't call {nameof(RunFSM)} on a running FSM, cal {nameof(SwitchState)} instead.");
 			}
 		}
 
@@ -70,6 +77,10 @@ namespace RaFSM
 				int newStateIndex = _fsm.SwitchState(state);
 				FireNewStateEvent(newStateIndex, oldState);
 			}
+			else
+			{
+				Debug.LogError($"Can't switch state on a non-running FSM. Call {nameof(RunFSM)} first");
+			}
 		}
 
 		public void SwitchState(int index)
@@ -79,6 +90,10 @@ namespace RaFSM
 				RaGOStateBase oldState = (RaGOStateBase)_fsm.GetCurrentState();
 				_fsm.SwitchState(index);
 				FireNewStateEvent(index, oldState);
+			}
+			else
+			{
+				Debug.LogError($"Can't switch state on a non-running FSM. Call {nameof(RunFSM)} first");
 			}
 		}
 
@@ -94,6 +109,10 @@ namespace RaFSM
 				{
 					GoFSMStateEvents.LastStateExitEvent.Invoke();
 				}
+			}
+			else
+			{
+				Debug.LogError($"Can't switch state on a non-running FSM. Call {nameof(RunFSM)} first");
 			}
 		}
 

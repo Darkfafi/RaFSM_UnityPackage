@@ -19,7 +19,7 @@ namespace RaFSM
 			get; private set;
 		}
 
-		internal bool Init(TParent parent)
+		internal virtual bool Init(TParent parent)
 		{
 			if(IsInitialized)
 			{
@@ -62,7 +62,7 @@ namespace RaFSM
 			return true;
 		}
 
-		internal bool Deinit()
+		internal virtual bool Deinit()
 		{
 			if(!IsInitialized)
 			{

@@ -6,8 +6,10 @@ namespace RaFSM.Core
 	[Serializable]
 	public struct RaGOCoreEventCollection
 	{
+		public RaGOStateEvent InitStateEvent;
 		public RaGOStateEvent EnterStateEvent;
 		public RaGOStateEvent ExitStateEvent;
+		public RaGOStateEvent DeinitStateEvent;
 	}
 
 
