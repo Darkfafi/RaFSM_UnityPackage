@@ -1,5 +1,10 @@
 # Changelog RaFSM
 
+## v1.4.1 - 09/04/2023
+* Made it so the RaGOFSMRoot sets the _fsm when RunFSM is called 
+* Added error messages explaining why Run / Switch can't be called on the RaGOFSMRoot when used inappropriately
+* Added Core Events Init & Deinit to the RaGOStateBase
+
 ## v1.4.0 - 02/04/2023
 * Created RaGOFSMRoot to make it so there is a ready to use FSM component without requiring custom classes
 * Moved generic usable Interfaces/ Events to the file RaGOUtilClasses
