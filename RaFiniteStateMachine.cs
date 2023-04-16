@@ -25,6 +25,8 @@ namespace RaFSM
 			get; private set;
 		}
 
+		public bool IsRunning => CurrentStateIndex != RaGOFiniteStateMachine.NO_STATE_INDEX;
+
 		private int? _currentSwitch = null;
 		private Queue<int> _requestedSwitches = new Queue<int>();
 
@@ -103,6 +105,7 @@ namespace RaFSM
 
 			States = null;
 			Parent = default;
+			CurrentStateIndex = NO_STATE_INDEX;
 		}
 
 		public int GoToNextState(bool wrap)
