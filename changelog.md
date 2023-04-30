@@ -1,5 +1,8 @@
 # Changelog RaFSM
 
+## v1.4.2 - 30/04/2023
+* Added IsRunning property to the RaFiniteStateMachine
+
 ## v1.4.1 - 09/04/2023
 * Made it so the RaGOFSMRoot sets the _fsm when RunFSM is called 
 * Added error messages explaining why Run / Switch can't be called on the RaGOFSMRoot when used inappropriately
