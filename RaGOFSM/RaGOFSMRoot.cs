@@ -26,6 +26,7 @@ namespace RaFSM
 		private RaGOFiniteStateMachine _fsm = null;
 
 		public bool IsRunning => _fsm != null && _fsm.CurrentStateIndex != RaGOFiniteStateMachine.NO_STATE_INDEX;
+		public int CurrentStateIndex => _fsm != null ? _fsm.CurrentStateIndex : RaGOFiniteStateMachine.NO_STATE_INDEX;
 
 		private void Awake()
 		{
