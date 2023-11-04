@@ -88,6 +88,8 @@ namespace RaFSM
 
 		public void Dispose()
 		{
+			SwitchedStateEvent = null;
+
 			if(TryGetCurrentState(out var currentState))
 			{
 				CurrentStateIndex = NO_STATE_INDEX;
