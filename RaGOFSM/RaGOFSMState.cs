@@ -63,6 +63,8 @@ namespace RaFSM
 		private RaGOFiniteStateMachine _fsm = null;
 		private IRaGOFSMCallbackReceiver _callbackReceiver = null;
 
+		public int CurrentStateIndex => _fsm != null ? _fsm.CurrentStateIndex : -1;
+
 		protected override void OnInit()
 		{
 			_fsm = new RaGOFiniteStateMachine(this, _states, _excludeDisabledStates);
