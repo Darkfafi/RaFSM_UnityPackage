@@ -131,6 +131,8 @@ namespace RaFSM
 			}
 		}
 
+		public int GetStateIndex(RaGOStateBase state) => _fsm != null ? _fsm.GetStateIndex(state) : -1;
+
 		protected virtual void OnValidate()
 		{
 			if(_autoFillStates)
